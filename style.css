@@ -369,13 +369,15 @@ input:checked + .slider:before {
     }
 }
 
+/* style.css */
+
 /* ======================================== */
-/*          卡片切换动画样式               */
+/*          卡片切换动画样式 (v2)           */
 /* ======================================== */
 
 .content {
-    position: relative; /* 为绝对定位的子元素提供参考 */
-    overflow: hidden; /* 隐藏所有溢出视口的内容 */
+    position: relative;
+    overflow: hidden;
 }
 
 .card-viewport {
@@ -390,44 +392,48 @@ input:checked + .slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    overflow-y: auto; /* 允许卡片内容本身滚动 */
+    overflow-y: auto;
     padding: 30px;
-    background-color: #f4f7f9; /* 与 body 背景色相同 */
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* 平滑过渡动画 */
+    background-color: #f4f7f9;
+    /* 关键：只对 transform 和 box-shadow 应用过渡 */
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* 移动端内边距小一点 */
 @media (max-width: 768px) {
     .card-container {
         padding: 20px;
     }
 }
 
-/* --- 动画状态类 --- */
+/* --- 动画状态类 (覆盖式动画) --- */
 
-/* 当前显示的卡片 */
+/* 当前显示的卡片，位于最底层 */
 .card-container.current {
     transform: translateX(0);
+    z-index: 1;
 }
 
 /* 准备从右边滑入的卡片 (下一张) */
 .card-container.next {
     transform: translateX(100%);
     z-index: 2; /* 确保它在当前卡片之上 */
+    box-shadow: -5px 0 20px rgba(0,0,0,0.15); /* 左侧阴影，产生深度感 */
 }
 
 /* 准备从左边滑入的卡片 (上一张) */
 .card-container.prev {
-    transform: translateX(-100%);
-    z-index: 2; /* 确保它在当前卡片之上 */
+    transform: translateX(0); /* 它一开始就在下面，不动 */
+    z-index: 0; /* 在最底层 */
 }
 
-/* 滑出到左边的卡片 */
+/* 滑出到左边的卡片 (旧的当前卡片) */
 .card-container.slide-out-left {
-    transform: translateX(-100%);
+    transform: translateX(0); /* 覆盖式动画，它不动 */
 }
 
-/* 滑出到右边的卡片 */
+/* 滑出到右边的卡片 (被“揭开”的卡片) */
 .card-container.slide-out-right {
     transform: translateX(100%);
+    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
 }
