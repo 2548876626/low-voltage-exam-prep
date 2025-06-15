@@ -1,0 +1,153 @@
+/* style.css - 页面样式 */
+
+/* --- 基本重置和全局样式 --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* --- 整体布局 --- */
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- 左侧导航栏 --- */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.sidebar h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid #34495e;
+    padding-bottom: 10px;
+}
+
+#card-nav-list {
+    list-style-type: none;
+}
+
+#card-nav-list li a {
+    display: block;
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
+}
+
+#card-nav-list li a:hover {
+    background-color: #34495e;
+}
+
+#card-nav-list li a.active {
+    background-color: #3498db;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* --- 右侧主内容区 --- */
+.content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.card-header {
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+
+#card-subject {
+    color: #555;
+    font-size: 1.2em;
+    font-weight: normal;
+}
+
+#card-title {
+    color: #2c3e50;
+    font-size: 2em;
+}
+
+.card-meta {
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 25px;
+    display: flex;
+    gap: 30px;
+    font-size: 0.9em;
+}
+
+.card-meta strong {
+    color: #e74c3c;
+}
+
+.card-section {
+    margin-bottom: 25px;
+}
+
+.card-section h4 {
+    font-size: 1.3em;
+    color: #3498db;
+    border-left: 4px solid #3498db;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.card-section.veto h4 {
+    color: #c0392b;
+    border-left-color: #c0392b;
+}
+
+#card-content, #card-veto {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    white-space: pre-wrap; /* 关键：保留换行符 */
+}
+
+#card-image-container img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+
+/* --- 移动端适配 --- */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 40vh; /* 限制导航高度 */
+    }
+    .content {
+        padding: 20px;
+    }
+    #card-title {
+        font-size: 1.5em;
+    }
+}
