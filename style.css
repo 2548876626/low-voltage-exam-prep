@@ -295,3 +295,76 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(22px);
 }
+
+/* ======================================== */
+/*          响应式设计 (移动端优先)         */
+/* ======================================== */
+
+/* --- 移动端头部 --- */
+.mobile-header {
+    display: none; /* 默认在桌面端隐藏 */
+    position: fixed; /* 固定在顶部 */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #2c3e50;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+}
+
+#mobile-header-title {
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+
+/* --- 当屏幕宽度小于等于 768px 时应用以下样式 --- */
+@media (max-width: 768px) {
+    /* 1. 显示移动端头部 */
+    .mobile-header {
+        display: flex;
+    }
+
+    /* 2. 主体内容上移，为固定头部留出空间 */
+    .container {
+        padding-top: 50px;
+        flex-direction: column; /* 恢复垂直布局，但 sidebar 将被特殊处理 */
+    }
+
+    /* 3. 侧边栏变成抽屉式菜单 */
+    .sidebar {
+        position: fixed; /* 固定定位，脱离文档流 */
+        top: 0;
+        left: -260px; /* 初始状态完全移出屏幕左侧 */
+        width: 250px;
+        height: 100vh; /* 占满整个屏幕高度 */
+        z-index: 1001; /* 比头部更高，能覆盖在上面 */
+        transition: left 0.3s ease-in-out; /* 平滑的滑入滑出动画 */
+        padding-top: 60px; /* 为顶部留出空间 */
+    }
+
+    /* 4. 侧边栏激活状态 (滑入) */
+    .sidebar.active {
+        left: 0; /* 滑入到屏幕内 */
+        box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+    }
+    
+    /* 5. 内容区占满全屏 */
+    .content {
+       width: 100%;
+       padding: 20px;
+    }
+}

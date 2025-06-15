@@ -7,9 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- 新增的移动端头部 -->
+    <header class="mobile-header">
+        <button id="menu-toggle" class="menu-toggle">
+            ☰ <!-- 这是汉堡包菜单的HTML实体字符 -->
+        </button>
+        <span id="mobile-header-title">K1-1</span>
+    </header>
+
     <div class="container">
         <!-- 左侧导航栏 -->
-        <nav class="sidebar">
+        <nav id="sidebar" class="sidebar">
             <h1>题卡导航</h1>
             <ul id="card-nav-list">
                 <!-- 导航项将由JS动态生成 -->
@@ -17,7 +25,8 @@
         </nav>
 
         <!-- 右侧主内容区 -->
-        <main class="content">
+        <main id="main-content" class="content">
+            <!-- ... 原有的内容区代码不变 ... -->
             <div class="card-header">
                 <h2 id="card-subject">科目</h2>
                 <h3 id="card-title">标题</h3>
@@ -26,22 +35,15 @@
                 <span>考试时间: <strong id="card-time"></strong></span>
                 <span>考题配分: <strong id="card-score"></strong></span>
             </div>
-            
-            <div id="card-image-container">
-                 <!-- 图片将由JS动态生成 -->
-            </div>
-
+            <div id="card-image-container"></div>
             <div class="card-section">
                 <h4>考试内容</h4>
                 <div id="card-content"></div>
             </div>
-
             <div class="card-section veto">
                 <h4>否决项</h4>
                 <div id="card-veto"></div>
             </div>
-
-            <!-- ========== 新增的练习模式部分 ========== -->
             <div class="practice-section">
                 <div class="practice-header">
                     <h3><span class="emoji">🧠</span> 随堂练习</h3>
@@ -51,12 +53,8 @@
                     </label>
                     <span>练习模式</span>
                 </div>
-                <div id="practice-container" class="hidden">
-                    <!-- 练习题将由JS动态生成到这里 -->
-                </div>
+                <div id="practice-container" class="hidden"></div>
             </div>
-            <!-- ===================================== -->
-            
         </main>
     </div>
 
