@@ -32,6 +32,8 @@ body {
     padding: 20px;
     overflow-y: auto;
     flex-shrink: 0;
+    position: relative;
+    z-index: 10;
 }
 
 .sidebar h1 {
@@ -71,6 +73,8 @@ body {
     flex-grow: 1;
     padding: 30px;
     overflow-y: auto;
+    position: relative;
+    z-index: 5;
 }
 
 .card-header {
@@ -338,6 +342,7 @@ input:checked + .slider:before {
        padding: 20px;
        position: relative;
        overflow-x: hidden;
+       z-index: 5;
     }
 }
 
