@@ -204,7 +204,7 @@ const examData = {
       ],
       examTime: "30分钟",
       score: "40分",
-      image: "https://imgur.com/a/RNFGgtQ",
+      image: "images/K2-1.png",
       practice: [
         {
           type: "qna",
@@ -239,7 +239,7 @@ const examData = {
       ],
       examTime: "45分钟",
       score: "40分",
-      image: "https://i.imgur.com/yF9N4J4.png", // 示例URL
+      image: "images/K2-2.png", // 示例URL
       practice: [
         {
           type: "qna",
@@ -274,7 +274,7 @@ const examData = {
       ],
       examTime: "30分钟",
       score: "40分",
-      image: "https://imgur.com/a/RNFGgtQ", // 示例URL
+      image: "images/K2-3.png", // 示例URL
       practice: [
         {
           type: "qna",
@@ -309,7 +309,7 @@ const examData = {
       ],
       examTime: "30分钟",
       score: "40分",
-      image: "https://i.imgur.com/fD4sCjH.png", // 示例URL
+      image: "images/K2-4.png", // 示例URL
       practice: [
         {
           type: "qna",
@@ -345,7 +345,7 @@ const examData = {
       ],
       examTime: "30分钟",
       score: "40分",
-      image: "https://i.imgur.com/kG5tFvD.png", // 示例URL
+      image: "images/K2-5.png", // 示例URL
       practice: [
         {
           type: "qna",
