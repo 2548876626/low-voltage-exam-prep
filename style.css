@@ -151,3 +151,147 @@ body {
         font-size: 1.5em;
     }
 }
+
+
+/* --- 练习模式样式 --- */
+.practice-section {
+    margin-top: 40px;
+    border-top: 2px solid #e0e0e0;
+    padding-top: 20px;
+}
+
+.practice-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.practice-header h3 {
+    font-size: 1.5em;
+    color: #2980b9;
+    margin-right: auto; /* 关键：让标题和开关分开 */
+}
+
+.practice-header .emoji {
+    margin-right: 8px;
+}
+
+#practice-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#practice-container.hidden {
+    display: none;
+}
+
+.practice-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: box-shadow 0.3s;
+}
+
+.practice-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.practice-question {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+
+.practice-answer-container {
+    display: none; /* 默认隐藏答案 */
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+.practice-answer h5 {
+    font-size: 1em;
+    color: #34495e;
+    margin-bottom: 8px;
+}
+
+.practice-answer-official {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+}
+
+.practice-answer-simple {
+    background-color: #e8f6f3;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    border-left: 3px solid #1abc9c;
+}
+
+.toggle-answer-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-answer-btn:hover {
+    background-color: #2980b9;
+}
+
+
+/* --- 开关(Switch)样式 --- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
