@@ -32,7 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- 滑动功能所需变量 ---
     let touchStartX = 0;
     let touchEndX = 0;
-    const swipeThreshold = 50; // 最小滑动距离
+    let touchStartY = 0; // 添加Y轴触摸点，用于判断是否为水平滑动
+    let touchStartTime = 0; // 触摸开始时间
+    let touchEndTime = 0; // 触摸结束时间
+    const swipeThreshold = 30; // 降低最小滑动距离，使滑动更灵敏
+    const swipeTimeThreshold = 300; // 快速滑动的时间阈值（毫秒）
+    const swipeSpeedThreshold = 0.5; // 快速滑动的速度阈值（像素/毫秒）
+    let isSwiping = false; // 是否正在滑动
 
     // --- 核心功能函数 ---
 
@@ -103,13 +109,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 滑动处理
     function handleSwipe() {
+        if (isAnimating) return;
+        
         const deltaX = touchEndX - touchStartX;
-        if (Math.abs(deltaX) < swipeThreshold || isAnimating) return;
+        const deltaY = Math.abs(touchEndY - touchStartY); // 计算Y轴滑动距离
+        const swipeTime = touchEndTime - touchStartTime; // 计算滑动时间
+        const swipeSpeed = Math.abs(deltaX) / swipeTime; // 计算滑动速度
+        
+        // 如果垂直滑动距离大于水平滑动距离的一半，则认为是垂直滚动，不触发翻页
+        if (deltaY > Math.abs(deltaX) / 2) return;
+        
+        // 判断是否满足滑动条件：距离超过阈值 或 速度超过阈值且时间小于阈值（快速滑动）
+        const isValidSwipe = Math.abs(deltaX) >= swipeThreshold || 
+                            (swipeSpeed >= swipeSpeedThreshold && swipeTime <= swipeTimeThreshold);
+        
+        if (!isValidSwipe) return;
 
         const currentIndex = cardIds.indexOf(currentCardId);
         if (deltaX < 0 && currentIndex < cardIds.length - 1) {
+            // 向左滑动，显示下一张
             animateAndChangeCard(cardIds[currentIndex + 1], 'next');
         } else if (deltaX > 0 && currentIndex > 0) {
+            // 向右滑动，显示上一张
             animateAndChangeCard(cardIds[currentIndex - 1], 'prev');
         }
     }
@@ -138,8 +159,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     practiceToggle.addEventListener('change', function() { updateUIMode(this.checked); });
     practiceContainer.addEventListener('click', function(event) { if (event.target.classList.contains('toggle-answer-btn')) { const targetId = event.target.dataset.target; const answerContainer = document.getElementById(targetId); if (answerContainer) { answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; } } });
-    mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
+    
+    // 增强的触摸事件处理
+    let touchEndY = 0; // 添加Y轴结束点
+    
+    mainContent.addEventListener('touchstart', (e) => { 
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = new Date().getTime();
+        isSwiping = true;
+    }, { passive: true });
+    
+    mainContent.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        
+        // 防止触发页面滚动
+        const deltaX = e.touches[0].clientX - touchStartX;
+        const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+        
+        // 如果是水平滑动，阻止页面滚动
+        if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 10) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    mainContent.addEventListener('touchend', (e) => { 
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        touchEndTime = new Date().getTime();
+        isSwiping = false;
+        handleSwipe();
+    });
+    
+    mainContent.addEventListener('touchcancel', () => {
+        isSwiping = false;
+    });
 
     // --- 页面初始化 ---
     populateNav();
