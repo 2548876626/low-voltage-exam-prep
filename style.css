@@ -1,4 +1,4 @@
-/* style.css - 完整样式文件 */
+/* style.css - 最终完整版 */
 
 /* ======================================== */
 /*          1. 基本重置和全局样式           */
@@ -312,46 +312,32 @@ input:checked + .slider:before {
 
 /* --- 当屏幕宽度小于等于 768px 时应用以下样式 --- */
 @media (max-width: 768px) {
-    /* 1. 显示移动端头部 */
     .mobile-header {
         display: flex;
     }
-
-    /* 2. 主体内容上移，为固定头部留出空间 */
     .container {
         padding-top: 50px;
+        flex-direction: row; 
     }
-
-    /* 3. 侧边栏变成抽屉式菜单 */
     .sidebar {
-        position: fixed; /* 固定定位，脱离文档流 */
+        position: fixed;
         top: 0;
-        left: -260px; /* 初始状态完全移出屏幕左侧 */
+        left: -260px;
         width: 250px;
-        height: 100vh; /* 占满整个屏幕高度 */
-        z-index: 1001; /* 比头部更高，能覆盖在上面 */
-        transition: left 0.3s ease-in-out; /* 平滑的滑入滑出动画 */
-        padding-top: 60px; /* 为顶部留出空间 */
+        height: 100vh;
+        z-index: 1001;
+        transition: left 0.3s ease-in-out;
+        padding-top: 60px;
     }
-
-    /* 4. 侧边栏激活状态 (滑入) */
     .sidebar.active {
-        left: 0; /* 滑入到屏幕内 */
+        left: 0;
         box-shadow: 3px 0 15px rgba(0,0,0,0.2);
     }
-    
-    /* 5. 内容区占满全屏 */
     .content {
        width: 100%;
        padding: 20px;
-       position: relative; /* 为动画定位做准备 */
-       overflow-x: hidden; /* 关键：隐藏滑出屏幕的内容 */
-    }
-    
-    /* 6. 恢复 container 的 flex 布局，否则内容区无法撑开 */
-    /* 这是对之前代码的一个小修复 */
-    .container {
-        flex-direction: row; 
+       position: relative;
+       overflow-x: hidden;
     }
 }
 
@@ -359,69 +345,33 @@ input:checked + .slider:before {
 /*          5. 卡片切换动画               */
 /* ======================================== */
 
-/* 【修改】将动画持续时间定义为 CSS 变量 */
-:root {
-    --transition-speed: 0.35s; /* 默认动画速度 */
-}
-
-/* --- 向左滑出 (看下一张) --- */
 @keyframes slide-out-to-left {
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(-100%); opacity: 0; }
 }
-
-/* --- 从右滑入 (看下一张) --- */
 @keyframes slide-in-from-right {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
-
-/* --- 向右滑出 (看上一张) --- */
 @keyframes slide-out-to-right {
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(100%); opacity: 0; }
 }
-
-/* --- 从左滑入 (看上一张) --- */
 @keyframes slide-in-from-left {
     from { transform: translateX(-100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* --- 用于JS切换的动画类 (使用变量) --- */
+/* --- 用于JS切换的动画类 (使用固定时间) --- */
 .slide-out-left {
-    animation: slide-out-to-left var(--transition-speed) forwards ease-in-out;
+    animation: slide-out-to-left 0.2s forwards ease-in-out;
 }
 .slide-in-right {
-    animation: slide-in-from-right var(--transition-speed) forwards ease-in-out;
+    animation: slide-in-from-right 0.2s forwards ease-in-out;
 }
 .slide-out-right {
-    animation: slide-out-to-right var(--transition-speed) forwards ease-in-out;
+    animation: slide-out-to-right 0.2s forwards ease-in-out;
 }
 .slide-in-left {
-    animation: slide-in-from-left var(--transition-speed) forwards ease-in-out;
-}
-
-
-/* ======================================== */
-/*          6. 调试工具 (可选)            */
-/* ======================================== */
-.debug-panel {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    z-index: 9999;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.debug-panel input[type="range"] {
-    width: 100px;
-    cursor: pointer;
+    animation: slide-in-from-left 0.2s forwards ease-in-out;
 }

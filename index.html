@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 新增的移动端头部 -->
+    <!-- 移动端头部 -->
     <header class="mobile-header">
         <button id="menu-toggle" class="menu-toggle">
             ☰ <!-- 这是汉堡包菜单的HTML实体字符 -->
@@ -24,21 +24,8 @@
             </ul>
         </nav>
 
-    <!-- ========== 【新增】调试面板 ========== -->
-    <div class="debug-panel">
-        <label for="speed-slider">动画速度:</label>
-        <input type="range" id="speed-slider" min="0.1" max="1.5" step="0.05" value="0.35">
-        <span id="speed-value">0.35s</span>
-    </div>
-    <!-- ===================================== -->
-
-    <!-- 引入数据和逻辑脚本 -->
-    <script src="data.js"></script>
-    <script src="app.js"></script>
-        
         <!-- 右侧主内容区 -->
         <main id="main-content" class="content">
-            <!-- ... 原有的内容区代码不变 ... -->
             <div class="card-header">
                 <h2 id="card-subject">科目</h2>
                 <h3 id="card-title">标题</h3>
@@ -47,25 +34,32 @@
                 <span>考试时间: <strong id="card-time"></strong></span>
                 <span>考题配分: <strong id="card-score"></strong></span>
             </div>
-            <div id="card-image-container"></div>
+            <div id="card-image-container">
+                 <!-- 图片将由JS动态生成 -->
+            </div>
+
             <div class="card-section">
                 <h4>考试内容</h4>
                 <div id="card-content"></div>
             </div>
+
             <div class="card-section veto">
                 <h4>否决项</h4>
                 <div id="card-veto"></div>
             </div>
+
             <div class="practice-section">
                 <div class="practice-header">
-                    <h3><span class="emoji">🧠</span> 随堂练习</h3>
+                    <h3><span class="emoji">🧠</span> 练习</h3>
                     <label class="switch">
                         <input type="checkbox" id="practice-mode-toggle">
                         <span class="slider"></span>
                     </label>
                     <span>练习模式</span>
                 </div>
-                <div id="practice-container" class="hidden"></div>
+                <div id="practice-container" class="hidden">
+                    <!-- 练习题将由JS动态生成到这里 -->
+                </div>
             </div>
         </main>
     </div>
