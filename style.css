@@ -359,6 +359,11 @@ input:checked + .slider:before {
 /*          5. 卡片切换动画               */
 /* ======================================== */
 
+/* 【修改】将动画持续时间定义为 CSS 变量 */
+:root {
+    --transition-speed: 0.35s; /* 默认动画速度 */
+}
+
 /* --- 向左滑出 (看下一张) --- */
 @keyframes slide-out-to-left {
     from { transform: translateX(0); opacity: 1; }
@@ -383,16 +388,40 @@ input:checked + .slider:before {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* --- 用于JS切换的动画类 --- */
+/* --- 用于JS切换的动画类 (使用变量) --- */
 .slide-out-left {
-    animation: slide-out-to-left 0.35s forwards ease-in-out;
+    animation: slide-out-to-left var(--transition-speed) forwards ease-in-out;
 }
 .slide-in-right {
-    animation: slide-in-from-right 0.35s forwards ease-in-out;
+    animation: slide-in-from-right var(--transition-speed) forwards ease-in-out;
 }
 .slide-out-right {
-    animation: slide-out-to-right 0.35s forwards ease-in-out;
+    animation: slide-out-to-right var(--transition-speed) forwards ease-in-out;
 }
 .slide-in-left {
-    animation: slide-in-from-left 0.35s forwards ease-in-out;
+    animation: slide-in-from-left var(--transition-speed) forwards ease-in-out;
+}
+
+
+/* ======================================== */
+/*          6. 调试工具 (可选)            */
+/* ======================================== */
+.debug-panel {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    z-index: 9999;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.debug-panel input[type="range"] {
+    width: 100px;
+    cursor: pointer;
 }
