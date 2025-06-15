@@ -30,10 +30,22 @@
                 <h2 id="card-subject">科目</h2>
                 <h3 id="card-title">标题</h3>
             </div>
-            <div class="card-meta">
-                <span>考试时间: <strong id="card-time"></strong></span>
-                <span>考题配分: <strong id="card-score"></strong></span>
+            
+            <!-- 练习模块移到这里（题目横线下面） -->
+            <div class="practice-section">
+                <div class="practice-header">
+                    <h3><span class="emoji">🧠</span> 练习</h3>
+                    <label class="switch">
+                        <input type="checkbox" id="practice-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>练习模式</span>
+                </div>
+                <div id="practice-container" class="hidden">
+                    <!-- 练习题将由JS动态生成到这里 -->
+                </div>
             </div>
+            
             <div id="card-image-container">
                  <!-- 图片将由JS动态生成 -->
             </div>
@@ -47,19 +59,11 @@
                 <h4>否决项</h4>
                 <div id="card-veto"></div>
             </div>
-
-            <div class="practice-section">
-                <div class="practice-header">
-                    <h3><span class="emoji">🧠</span> 练习</h3>
-                    <label class="switch">
-                        <input type="checkbox" id="practice-mode-toggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span>练习模式</span>
-                </div>
-                <div id="practice-container" class="hidden">
-                    <!-- 练习题将由JS动态生成到这里 -->
-                </div>
+            
+            <!-- 考试时间和考题配分放在后面 -->
+            <div class="card-meta">
+                <span>考试时间: <strong id="card-time"></strong></span>
+                <span>考题配分: <strong id="card-score"></strong></span>
             </div>
         </main>
     </div>

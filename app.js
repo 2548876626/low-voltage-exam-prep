@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const cardContentSections = [
         document.getElementById('card-content').parentElement,
         document.getElementById('card-veto').parentElement,
-        document.getElementById('card-image-container')
+        document.getElementById('card-image-container'),
+        document.querySelector('.card-meta')
     ];
 
     // --- 滑动功能所需变量 ---
