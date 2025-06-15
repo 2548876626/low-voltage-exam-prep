@@ -1,10 +1,12 @@
-// app.js - 页面交互逻辑 (已添加移动端抽屉菜单)
+// app.js - 页面交互逻辑 (已添加丝滑切换动画)
 
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- 状态变量 ---
     let currentCardId = 'K1-1';
     const cardIds = Object.keys(examData);
+    let currentContainerIndex = 1;
+    let isAnimating = false;
 
     // --- DOM元素获取 ---
     const navList = document.getElementById('card-nav-list');
@@ -12,20 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menu-toggle');
     const mobileHeaderTitle = document.getElementById('mobile-header-title');
-    // ... 其他DOM元素
-    const cardSubjectEl = document.getElementById('card-subject');
-    const cardTitleEl = document.getElementById('card-title');
-    const cardTimeEl = document.getElementById('card-time');
-    const cardScoreEl = document.getElementById('card-score');
-    const cardContentEl = document.getElementById('card-content');
-    const cardVetoEl = document.getElementById('card-veto');
-    const cardImageContainer = document.getElementById('card-image-container');
-    const practiceToggle = document.getElementById('practice-mode-toggle');
-    const practiceContainer = document.getElementById('practice-container');
-    const cardContentSections = [
-        document.getElementById('card-content').parentElement,
-        document.getElementById('card-veto').parentElement,
-        document.getElementById('card-image-container')
+    const cardTemplate = document.getElementById('card-template');
+    const containers = [
+        document.getElementById('card-container-1'),
+        document.getElementById('card-container-2')
     ];
 
     // --- 滑动功能所需变量 ---
@@ -35,89 +27,138 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 核心功能函数 ---
 
-    function updateUIMode(isPracticeMode) {
-        cardContentSections.forEach(section => {
-            section.style.display = isPracticeMode ? 'none' : 'block';
-        });
-        practiceContainer.classList.toggle('hidden', !isPracticeMode);
-    }
+    // 填充卡片内容
+    function populateCard(container, cardId) {
+        const cardData = examData[cardId];
+        if (!cardData) return;
 
-    function displayCard(cardId) {
-        const card = examData[cardId];
-        if (!card) return;
+        const cardNode = cardTemplate.content.cloneNode(true);
+        container.innerHTML = ''; // 清空容器
+        container.appendChild(cardNode);
 
-        currentCardId = cardId;
-        mobileHeaderTitle.textContent = cardId; // 更新移动端头部的标题
-
-        // 更新数据...
-        cardSubjectEl.textContent = card.subject;
-        cardTitleEl.textContent = card.title;
-        cardTimeEl.textContent = card.examTime;
-        cardScoreEl.textContent = card.score;
-        cardContentEl.textContent = card.content.join('\n');
-        cardVetoEl.textContent = card.vetoItems.join('\n');
+        // 填充数据
+        container.querySelector('.card-subject').textContent = cardData.subject;
+        container.querySelector('.card-title').textContent = cardData.title;
+        container.querySelector('.card-time').textContent = cardData.examTime;
+        container.querySelector('.card-score').textContent = cardData.score;
+        container.querySelector('.card-content').textContent = cardData.content.join('\n');
+        container.querySelector('.card-veto').textContent = cardData.vetoItems.join('\n');
         
-        cardImageContainer.innerHTML = '';
-        if (card.image) {
+        const imgContainer = container.querySelector('.card-image-container');
+        if (cardData.image) {
             const img = document.createElement('img');
-            img.src = card.image;
-            img.alt = `${card.title} - 电路图`;
-            cardImageContainer.appendChild(img);
+            img.src = cardData.image;
+            img.alt = `${cardData.title} - 电路图`;
+            imgContainer.appendChild(img);
         }
-        
-        updateActiveNav(cardId);
-        generatePractice(card);
-        updateUIMode(practiceToggle.checked);
 
-        // 在移动端，切换卡片后自动关闭菜单
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('active');
-        }
+        // 练习模式相关
+        const practiceContainer = container.querySelector('.practice-container');
+        const practiceToggle = container.querySelector('.practice-mode-toggle');
+        
+        generatePractice(practiceContainer, cardData);
+        
+        practiceToggle.addEventListener('change', function() {
+            updateUIMode(container, this.checked);
+        });
+
+        // 保持练习模式状态
+        const globalPracticeMode = document.querySelector('#card-container-1 .practice-mode-toggle, #card-container-2 .practice-mode-toggle').checked;
+        practiceToggle.checked = globalPracticeMode;
+        updateUIMode(container, globalPracticeMode);
+    }
+    
+    function updateUIMode(container, isPracticeMode) {
+        container.querySelector('.practice-container').classList.toggle('hidden', !isPracticeMode);
+        container.querySelector('.card-header').style.display = isPracticeMode ? 'none' : 'block';
+        container.querySelector('.card-meta').style.display = isPracticeMode ? 'none' : 'block';
+        container.querySelector('.card-image-container').style.display = isPracticeMode ? 'none' : 'block';
+        container.querySelector('.card-content').parentElement.style.display = isPracticeMode ? 'none' : 'block';
+        container.querySelector('.card-veto').parentElement.style.display = isPracticeMode ? 'none' : 'block';
+    }
+    
+    // 主切换函数
+    function switchCard(newCardId, direction = 'next') {
+        if (isAnimating || newCardId === currentCardId) return;
+        isAnimating = true;
+
+        const currentIndex = cardIds.indexOf(currentCardId);
+        const newIndex = cardIds.indexOf(newCardId);
+        if (newIndex < 0) { isAnimating = false; return; }
+        
+        // 决定动画方向
+        if (newIndex > currentIndex) direction = 'next';
+        if (newIndex < currentIndex) direction = 'prev';
+
+        const currentContainer = containers[currentContainerIndex - 1];
+        const nextContainerIndex = currentContainerIndex === 1 ? 2 : 1;
+        const nextContainer = containers[nextContainerIndex - 1];
+
+        // 填充新卡片并准备动画
+        populateCard(nextContainer, newCardId);
+        nextContainer.classList.add(direction); // 'next' or 'prev'
+
+        // 强制浏览器渲染，为动画做准备
+        requestAnimationFrame(() => {
+            // 开始动画
+            currentContainer.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
+            nextContainer.classList.remove('next', 'prev');
+            nextContainer.classList.add('current');
+
+            // 更新全局状态
+            currentCardId = newCardId;
+            currentContainerIndex = nextContainerIndex;
+            updateActiveNav(newCardId);
+            mobileHeaderTitle.textContent = newCardId;
+        });
+
+        // 动画结束后清理
+        setTimeout(() => {
+            currentContainer.classList.remove('current', 'slide-out-left', 'slide-out-right');
+            isAnimating = false;
+        }, 400); // 动画时间
     }
 
+    // 其他辅助函数
     function populateNav() { cardIds.forEach(id => { const li = document.createElement('li'); li.innerHTML = `<a href="#" data-id="${id}">${id}</a>`; navList.appendChild(li); }); }
     function updateActiveNav(activeId) { navList.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.id === activeId)); }
-    function generatePractice(card) { /* 此函数不变，为节省空间省略 */ practiceContainer.innerHTML = ''; if (!card.practice || card.practice.length === 0) { practiceContainer.innerHTML = '<p style="color: #777; font-style: italic;">此题卡暂无随堂练习。</p>'; return; } card.practice.forEach((item, index) => { const div = document.createElement('div'); div.className = 'practice-item'; div.innerHTML = `<p class="practice-question">练习 ${index + 1}: ${item.question}</p><button class="toggle-answer-btn" data-target="answer-${card.id}-${index}">显示/隐藏答案</button><div id="answer-${card.id}-${index}" class="practice-answer-container"><div class="practice-answer-official"><h5>【官方指南】</h5><p>${item.officialAnswer.replace(/\n/g, '<br>')}</p></div><div class="practice-answer-simple"><h5>【记忆要点】</h5><p>${item.simpleAnswer.replace(/\n/g, '<br>')}</p></div></div>`; practiceContainer.appendChild(div); }); }
+    function generatePractice(container, cardData) { /* 省略不变的代码 */ container.innerHTML = ''; if (!cardData.practice || cardData.practice.length === 0) { container.innerHTML = '<p style="color: #777; font-style: italic;">此题卡暂无随堂练习。</p>'; return; } cardData.practice.forEach((item, index) => { const div = document.createElement('div'); div.className = 'practice-item'; div.innerHTML = `<p class="practice-question">练习 ${index + 1}: ${item.question}</p><button class="toggle-answer-btn" data-target="answer-${cardData.id}-${index}">显示/隐藏答案</button><div id="answer-${cardData.id}-${index}" class="practice-answer-container"><div class="practice-answer-official"><h5>【官方指南】</h5><p>${item.officialAnswer.replace(/\n/g, '<br>')}</p></div><div class="practice-answer-simple"><h5>【记忆要点】</h5><p>${item.simpleAnswer.replace(/\n/g, '<br>')}</p></div></div>`; container.appendChild(div); }); }
 
     function handleSwipe() {
         const deltaX = touchEndX - touchStartX;
         if (Math.abs(deltaX) < swipeThreshold) return;
         const currentIndex = cardIds.indexOf(currentCardId);
         if (deltaX < 0 && currentIndex < cardIds.length - 1) {
-            displayCard(cardIds[currentIndex + 1]);
+            switchCard(cardIds[currentIndex + 1], 'next');
         } else if (deltaX > 0 && currentIndex > 0) {
-            displayCard(cardIds[currentIndex - 1]);
+            switchCard(cardIds[currentIndex - 1], 'prev');
         }
     }
 
     // --- 事件监听器 ---
-
-    // 【新增】菜单按钮点击事件
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-    });
-
-    // 【新增】点击内容区时，如果菜单是打开的，就关闭它
-    mainContent.addEventListener('click', () => {
-        if (sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
+    menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+    mainContent.addEventListener('click', (e) => { if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) { sidebar.classList.remove('active'); } });
+    navList.addEventListener('click', (e) => { e.preventDefault(); if (e.target.tagName === 'A') { switchCard(e.target.dataset.id); sidebar.classList.remove('active'); } });
+    mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
+    
+    // 答案显示/隐藏按钮 (使用事件委托到 mainContent)
+    mainContent.addEventListener('click', function(event) {
+        if (event.target.classList.contains('toggle-answer-btn')) {
+            const container = event.target.closest('.card-container');
+            const targetId = event.target.dataset.target;
+            const answerContainer = container.querySelector(`#${targetId}`);
+            if (answerContainer) {
+                answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block';
+            }
         }
     });
 
-    // 导航栏点击 (不变)
-    navList.addEventListener('click', function(event) { event.preventDefault(); if (event.target.tagName === 'A') { displayCard(event.target.dataset.id); } });
-    
-    // 练习模式开关 (不变)
-    practiceToggle.addEventListener('change', function() { updateUIMode(this.checked); });
-
-    // 答案显示/隐藏按钮 (不变)
-    practiceContainer.addEventListener('click', function(event) { if (event.target.classList.contains('toggle-answer-btn')) { const targetId = event.target.dataset.target; const answerContainer = document.getElementById(targetId); if (answerContainer) { answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; } } });
-
-    // 滑动事件 (不变)
-    mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
-
     // --- 页面初始化 ---
     populateNav();
-    displayCard(currentCardId);
+    // 初始加载
+    populateCard(containers[0], currentCardId);
+    containers[0].classList.add('current');
+    updateActiveNav(currentCardId);
+    mobileHeaderTitle.textContent = currentCardId;
 });

@@ -7,58 +7,65 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 新增的移动端头部 -->
     <header class="mobile-header">
-        <button id="menu-toggle" class="menu-toggle">
-            ☰ <!-- 这是汉堡包菜单的HTML实体字符 -->
-        </button>
+        <button id="menu-toggle" class="menu-toggle">☰</button>
         <span id="mobile-header-title">K1-1</span>
     </header>
 
     <div class="container">
-        <!-- 左侧导航栏 -->
         <nav id="sidebar" class="sidebar">
             <h1>题卡导航</h1>
-            <ul id="card-nav-list">
-                <!-- 导航项将由JS动态生成 -->
-            </ul>
+            <ul id="card-nav-list"></ul>
         </nav>
 
-        <!-- 右侧主内容区 -->
+        <!-- 主要内容区结构发生变化 -->
         <main id="main-content" class="content">
-            <!-- ... 原有的内容区代码不变 ... -->
-            <div class="card-header">
-                <h2 id="card-subject">科目</h2>
-                <h3 id="card-title">标题</h3>
-            </div>
-            <div class="card-meta">
-                <span>考试时间: <strong id="card-time"></strong></span>
-                <span>考题配分: <strong id="card-score"></strong></span>
-            </div>
-            <div id="card-image-container"></div>
-            <div class="card-section">
-                <h4>考试内容</h4>
-                <div id="card-content"></div>
-            </div>
-            <div class="card-section veto">
-                <h4>否决项</h4>
-                <div id="card-veto"></div>
-            </div>
-            <div class="practice-section">
-                <div class="practice-header">
-                    <h3><span class="emoji">🧠</span> 随堂练习</h3>
-                    <label class="switch">
-                        <input type="checkbox" id="practice-mode-toggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span>练习模式</span>
+            <!-- 我们需要一个视口来隐藏溢出的内容 -->
+            <div class="card-viewport">
+                <!-- 卡片容器1 -->
+                <div id="card-container-1" class="card-container">
+                    <!-- 卡片内容将动态插入这里 -->
                 </div>
-                <div id="practice-container" class="hidden"></div>
+                <!-- 卡片容器2 (用于动画过渡) -->
+                <div id="card-container-2" class="card-container">
+                    <!-- 卡片内容将动态插入这里 -->
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- 引入数据和逻辑脚本 -->
+    <!-- 这是一个模板，JS将克隆它来创建卡片内容 -->
+    <template id="card-template">
+        <div class="card-header">
+            <h2 class="card-subject"></h2>
+            <h3 class="card-title"></h3>
+        </div>
+        <div class="card-meta">
+            <span>考试时间: <strong class="card-time"></strong></span>
+            <span>考题配分: <strong class="card-score"></strong></span>
+        </div>
+        <div class="card-image-container"></div>
+        <div class="card-section">
+            <h4>考试内容</h4>
+            <div class="card-content"></div>
+        </div>
+        <div class="card-section veto">
+            <h4>否决项</h4>
+            <div class="card-veto"></div>
+        </div>
+        <div class="practice-section">
+            <div class="practice-header">
+                <h3><span class="emoji">🧠</span> 随堂练习</h3>
+                <label class="switch">
+                    <input type="checkbox" class="practice-mode-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span>练习模式</span>
+            </div>
+            <div class="practice-container hidden"></div>
+        </div>
+    </template>
+
     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
