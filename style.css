@@ -14,6 +14,9 @@ body {
     background-color: #f4f7f9;
     color: #333;
     line-height: 1.6;
+    min-height: 100vh; /* 确保至少占满整个视口高度 */
+    width: 100%; /* 确保宽度占满 */
+    overflow-x: hidden; /* 防止水平滚动 */
 }
 
 /* ======================================== */
@@ -318,10 +321,13 @@ input:checked + .slider:before {
 @media (max-width: 768px) {
     .mobile-header {
         display: flex;
+        width: 100%; /* 确保宽度占满 */
     }
     .container {
         padding-top: 50px;
-        flex-direction: row; 
+        flex-direction: row;
+        min-height: calc(100vh - 50px); /* 减去头部高度 */
+        width: 100%; /* 确保宽度占满 */
     }
     .sidebar {
         position: fixed;
@@ -343,6 +349,52 @@ input:checked + .slider:before {
        position: relative;
        overflow-x: hidden;
        z-index: 5;
+       min-height: calc(100vh - 50px); /* 减去头部高度 */
+       height: auto; /* 自动高度 */
+    }
+    
+    /* 确保图片不会溢出容器 */
+    #card-image-container img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* 调整卡片内容在移动端的显示 */
+    .card-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* 调整练习部分在移动端的显示 */
+    .practice-header {
+        flex-wrap: wrap;
+    }
+}
+
+/* 添加更小屏幕的适配 */
+@media (max-width: 480px) {
+    .content {
+        padding: 15px;
+    }
+    
+    #card-title {
+        font-size: 1.5em;
+    }
+    
+    .card-section h4 {
+        font-size: 1.1em;
+    }
+    
+    /* 进一步调整小屏幕上的元素大小 */
+    .practice-item {
+        padding: 15px;
+    }
+}
+
+/* 确保所有可滚动区域在触摸设备上平滑滚动 */
+@media (pointer: coarse) {
+    .sidebar, .content, body {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
