@@ -344,6 +344,8 @@ input:checked + .slider:before {
     .content {
        width: 100%;
        padding: 20px;
+       position: relative; /* 为动画定位做准备 */
+       overflow-x: hidden; /* 关键：隐藏滑出屏幕的内容 */
     }
     
     /* 6. 恢复 container 的 flex 布局，否则内容区无法撑开 */
@@ -351,4 +353,46 @@ input:checked + .slider:before {
     .container {
         flex-direction: row; 
     }
+}
+
+/* ======================================== */
+/*          5. 卡片切换动画               */
+/* ======================================== */
+
+/* --- 向左滑出 (看下一张) --- */
+@keyframes slide-out-to-left {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+
+/* --- 从右滑入 (看下一张) --- */
+@keyframes slide-in-from-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- 向右滑出 (看上一张) --- */
+@keyframes slide-out-to-right {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* --- 从左滑入 (看上一张) --- */
+@keyframes slide-in-from-left {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- 用于JS切换的动画类 --- */
+.slide-out-left {
+    animation: slide-out-to-left 0.35s forwards ease-in-out;
+}
+.slide-in-right {
+    animation: slide-in-from-right 0.35s forwards ease-in-out;
+}
+.slide-out-right {
+    animation: slide-out-to-right 0.35s forwards ease-in-out;
+}
+.slide-in-left {
+    animation: slide-in-from-left 0.35s forwards ease-in-out;
 }
