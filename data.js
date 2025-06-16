@@ -2,7 +2,7 @@
 
 const examData = {
   // =================================================================
-  // 科目一《电工仪表安全用具使用》 - 只包含“口述”题
+  // 科目一《电工仪表安全用具使用》 - 只包含"口述"题
   // =================================================================
   "K1-1": {
     id: "K1-1",
@@ -171,7 +171,7 @@ const examData = {
   },
 
   // =================================================================
-  // 科目二《安全操作技术》 - 只包含“正确回答下列问题”下的题目
+  // 科目二《安全操作技术》 - 只包含"正确回答下列问题"下的题目
   // =================================================================
   "K2-1": {
     id: "K2-1",
@@ -192,7 +192,7 @@ const examData = {
     ],
     examTime: "30分钟",
     score: "40分",
-    image: "https://i.imgur.com/2s3dKzq.png",
+    image: "images/K2-1.png",
     practice: [
       {
         type: "qna",
@@ -227,7 +227,7 @@ const examData = {
     ],
     examTime: "45分钟",
     score: "40分",
-    image: "https://i.imgur.com/yF9N4J4.png",
+    image: "images/K2-2.png",
     practice: [
       {
         type: "qna",
@@ -262,7 +262,7 @@ const examData = {
     ],
     examTime: "30分钟",
     score: "40分",
-    image: "https://i.imgur.com/aC3rBvG.png",
+    image: "images/K2-3.png",
     practice: [
       {
         type: "qna",
@@ -297,7 +297,7 @@ const examData = {
     ],
     examTime: "30分钟",
     score: "40分",
-    image: "https://i.imgur.com/fD4sCjH.png",
+    image: "images/K2-4.png",
     practice: [
       {
         type: "qna",
@@ -333,7 +333,7 @@ const examData = {
     ],
     examTime: "30分钟",
     score: "40分",
-    image: "https://i.imgur.com/kG5tFvD.png",
+    image: "images/K2-5.png",
     practice: [
       {
         type: "qna",
@@ -426,7 +426,7 @@ const examData = {
   },
 
   // =================================================================
-  // 科目四《作业现场应急处理》 - 只包含“回答”或“口答”题
+  // 科目四《作业现场应急处理》 - 只包含"回答"或"口答"题
   // =================================================================
   "K4-1": {
     id: "K4-1",

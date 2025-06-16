@@ -530,6 +530,9 @@ input:checked + .slider:before {
     font-size: 1.1em;
     color: #34495e;
     border-left: 5px solid #6a82fb;
+    max-height: 300px; /* 限制最大高度 */
+    overflow-y: auto; /* 添加垂直滚动条 */
+    white-space: pre-wrap; /* 保留换行符 */
 }
 
 .spinner {
@@ -545,4 +548,80 @@ input:checked + .slider:before {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 用户回答区域的样式 */
+#ai-answer-area {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#ai-user-answer {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 1em;
+    resize: vertical; /* Allow vertical resizing */
+}
+
+#ai-user-answer:focus {
+    outline: none;
+    border-color: #6a82fb;
+    box-shadow: 0 0 0 2px rgba(106, 130, 251, 0.3);
+}
+
+/* Align the submit button to the right */
+#ai-submit-answer-btn {
+    align-self: flex-end;
+}
+
+/* 用户回答显示样式 */
+.user-answer-display {
+  margin-top: 15px;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 3px solid #3498db;
+}
+
+.user-answer-display strong {
+  color: #3498db;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* AI评估反馈样式 */
+.ai-feedback {
+  margin-top: 15px;
+  background-color: #eaf2f8;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 3px solid #6a82fb;
+}
+
+.ai-feedback strong {
+  color: #6a82fb;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.error-message {
+  margin-top: 15px;
+  background-color: #fdedec;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 3px solid #e74c3c;
+  color: #c0392b;
+}
+
+hr {
+  margin: 15px 0;
+  border: 0;
+  height: 1px;
+  background-color: #ddd;
 }

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentCardId = 'K1-1';
     const cardIds = Object.keys(examData);
     let isAnimating = false; // 动画锁，防止连续触发
+    let conversationHistory = [];
 
     // --- DOM元素获取 ---
     const navList = document.getElementById('card-nav-list');
@@ -26,6 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const aiInteractionContainer = document.getElementById('ai-interaction-container');
     const aiQuestionBox = document.getElementById('ai-question-box');
     const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
+    const aiAnswerArea = document.getElementById('ai-answer-area');
+    const aiUserAnswerInput = document.getElementById('ai-user-answer');
+    const aiSubmitAnswerBtn = document.getElementById('ai-submit-answer-btn');
     const cardContentSections = [
         document.getElementById('card-content').parentElement,
         document.getElementById('card-veto').parentElement,
@@ -60,12 +64,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const img = document.createElement('img');
             img.src = card.image;
             img.alt = `${card.title} - 电路图`;
+            img.onerror = function() {
+                console.error(`图片加载失败: ${card.image}`);
+                this.src = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="70" viewBox="0 0 100 70"%3E%3Crect fill="%23f0f0f0" width="100" height="70"/%3E%3Cpath fill="%23cccccc" d="M36 20h32v30H36z"/%3E%3Cpath fill="%23666666" d="M40 50h22v4H40z"/%3E%3Cpath fill="%23666666" d="M49 25l-5 15h20l-5-15z"/%3E%3C/svg%3E';
+                this.style.opacity = '0.5';
+            };
             cardImageContainer.appendChild(img);
+            // 显示图片容器
+            cardImageContainer.style.display = 'block';
+        } else {
+            // 隐藏图片容器
+            cardImageContainer.style.display = 'none';
         }
         
         updateActiveNav(cardId);
         generatePractice(card);
         updateUIMode(practiceToggle.checked);
+        
+        // 在切换题卡时重置AI交互区域
+        resetAIState();
     }
     
     // 处理动画和卡片切换
@@ -122,9 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateUIMode(isPracticeMode) { 
         cardContentSections.forEach(s => s.style.display = isPracticeMode ? 'none' : 'block'); 
         practiceContainer.classList.toggle('hidden', !isPracticeMode);
-        // 在练习模式关闭时隐藏AI交互容器
+        // 在练习模式关闭时隐藏AI交互容器并重置状态
         if (!isPracticeMode) {
             aiInteractionContainer.classList.add('hidden');
+            resetAIState();
         }
     }
     function populateNav() { cardIds.forEach(id => { const li = document.createElement('li'); li.innerHTML = `<a href="#" data-id="${id}">${id}</a>`; navList.appendChild(li); }); }
@@ -151,53 +169,86 @@ document.addEventListener('DOMContentLoaded', function() {
     practiceContainer.addEventListener('click', function(event) { if (event.target.classList.contains('toggle-answer-btn')) { const targetId = event.target.dataset.target; const answerContainer = document.getElementById(targetId); if (answerContainer) { answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; } } });
     mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
-    aiTutorBtn.addEventListener('click', handleAITutorClick);
+    aiTutorBtn.addEventListener('click', startAIConversation);
+    aiSubmitAnswerBtn.addEventListener('click', submitUserAnswer);
 
     // --- AI导师功能 ---
-    async function handleAITutorClick() {
-        const card = examData[currentCardId];
-        if (!card) return;
-
-        // 构造发送给AI的提示
-        const prompt = `这是考试要点：\n${card.content.join('\n')}\n请根据这些要点，向我提出一个相关的问题。`;
-
-        // 显示加载动画，并禁用按钮
-        aiTutorBtn.disabled = true;
-        aiTutorBtn.innerHTML = '<span class="ai-icon">🤔</span> 正在思考...';
-        aiInteractionContainer.classList.remove('hidden');
+    function resetAIState() {
+        conversationHistory = []; // Clear history
+        aiInteractionContainer.classList.add('hidden');
+        aiAnswerArea.classList.add('hidden');
+        aiLoadingSpinner.style.display = 'none';
         aiQuestionBox.innerHTML = '';
-        aiLoadingSpinner.classList.remove('hidden');
+        aiUserAnswerInput.value = '';
+        aiTutorBtn.disabled = false;
+        aiTutorBtn.innerHTML = '<span class="ai-icon">🤖</span> AI考官';
+    }
+    
+    // Generic function to call the AI
+    async function callAI(messages) {
+        aiLoadingSpinner.style.display = 'block';
+        aiTutorBtn.disabled = true;
+        aiSubmitAnswerBtn.disabled = true;
 
         try {
-            // 调用我们的Netlify Function
             const response = await fetch('/.netlify/functions/ask-ai', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt })
+                body: JSON.stringify({ messages: messages })
             });
-
-            if (!response.ok) {
-                throw new Error(`服务器错误: ${response.status}`);
-            }
-            
             const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
+            if (!response.ok || data.error) {
+                throw new Error(data.details || 'Server returned an error.');
             }
-
-            // 显示AI的提问
-            aiQuestionBox.textContent = data.response;
-
+            return data.response;
         } catch (error) {
-            aiQuestionBox.textContent = `出错了：${error.message}，请稍后再试。`;
-            console.error('AI Tutor Error:', error);
+            console.error('AI Call Error:', error);
+            return `出错了：${error.message}`;
         } finally {
-            // 隐藏加载动画，并恢复按钮
-            aiLoadingSpinner.classList.add('hidden');
+            aiLoadingSpinner.style.display = 'none';
             aiTutorBtn.disabled = false;
-            aiTutorBtn.innerHTML = '<span class="ai-icon">🤖</span> 再问一题';
+            aiSubmitAnswerBtn.disabled = false;
         }
+    }
+
+    // Function to start a new conversation
+    async function startAIConversation() {
+        const card = examData[currentCardId];
+        if (!card) return;
+
+        resetAIState();
+        aiInteractionContainer.classList.remove('hidden');
+
+        const systemMessage = { role: 'system', content: '你是一个严格的低压电工实操考官。请根据用户提供的考试要点，一次只提出一个相关的问题。问题要简明扼要，直接切入要点。在用户回答后，请判断其回答是否正确，并可以追问或提出新问题。' };
+        const userMessage = { role: 'user', content: `这是考试要点：\n${card.content.join('\n')}\n请开始提问。` };
+        
+        conversationHistory = [systemMessage, userMessage];
+        
+        const firstQuestion = await callAI(conversationHistory);
+        
+        conversationHistory.push({ role: 'assistant', content: firstQuestion });
+        aiQuestionBox.textContent = firstQuestion;
+        aiAnswerArea.classList.remove('hidden');
+        aiTutorBtn.innerHTML = '<span class="ai-icon">🔄</span> 重新开始';
+    }
+
+    // Function to handle submitting an answer
+    async function submitUserAnswer() {
+        const userAnswer = aiUserAnswerInput.value.trim();
+        if (!userAnswer) {
+            alert('请输入你的回答！');
+            return;
+        }
+
+        conversationHistory.push({ role: 'user', content: userAnswer });
+        aiUserAnswerInput.value = ''; // Clear input
+
+        const aiJudgement = await callAI(conversationHistory);
+
+        conversationHistory.push({ role: 'assistant', content: aiJudgement });
+        aiQuestionBox.innerHTML += `\n\n<hr>\n<strong>你的回答:</strong> ${userAnswer}\n\n<strong>考官点评:</strong> ${aiJudgement}`;
+        // Scroll to the bottom of the box
+        aiQuestionBox.scrollTop = aiQuestionBox.scrollHeight;
     }
 
     // --- 页面初始化 ---

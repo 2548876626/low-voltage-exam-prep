@@ -9,40 +9,37 @@ exports.handler = async function(event, context) {
     }
 
     try {
-        const { prompt } = JSON.parse(event.body);
-        
-        // 你的 OpenRouter API Key，它依然从环境变量中获取
-        // Key 的名字我们不用改，还是叫 DEEPSEEK_API_KEY，方便管理
+        // Now we expect a 'messages' array from the frontend
+        const { messages } = JSON.parse(event.body);
         const openRouterApiKey = process.env.DEEPSEEK_API_KEY;
 
         if (!openRouterApiKey) {
-            throw new Error("API Key not found. Please check Netlify environment variables.");
+            throw new Error("API Key not found.");
+        }
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            throw new Error("Invalid 'messages' payload.");
         }
 
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", { // <--- 关键修改点 1: API Endpoint
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${openRouterApiKey}`, // <--- 认证头，格式正确
-                "HTTP-Referer": "https://YOUR_SITE_NAME.netlify.app", // <--- 关键修改点 2: 加上 Referer
-                "X-Title": "Low Voltage Exam Prep" // <--- (可选但推荐) 加上项目标题
+                "Authorization": `Bearer ${openRouterApiKey}`,
+                "HTTP-Referer": "https://elaborate-jalebi-c42658.netlify.app", // Remember to replace this
+                "X-Title": "Low Voltage Exam Prep"
             },
             body: JSON.stringify({
-                model: "deepseek/deepseek-chat", // <--- 关键修改点 3: OpenRouter 里的模型名
-                messages: [
-                    { "role": "system", "content": "你是一个严格的低压电工实操考官。请根据用户提供的考试要点，一次只提出一个相关的问题。问题要简明扼要，直接切入要点。" },
-                    { "role": "user", "content": prompt }
-                ],
-                max_tokens: 100,
+                model: "deepseek/deepseek-chat",
+                messages: messages, // Pass the entire conversation history
+                max_tokens: 150,
                 temperature: 0.5,
                 stream: false
             })
         });
 
         const responseText = await response.text();
-
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}: ${responseText}`);
+            throw new Error(`API request failed: ${responseText}`);
         }
         
         const data = JSON.parse(responseText);

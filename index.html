@@ -57,15 +57,21 @@
             <div id="ai-interaction-container" class="hidden">
                 <div id="ai-question-box" class="ai-box"></div>
                 <div id="ai-loading-spinner" class="spinner hidden"></div>
+                
+                <!-- New elements below -->
+                <div id="ai-answer-area" class="hidden">
+                    <textarea id="ai-user-answer" placeholder="在这里输入你的回答..."></textarea>
+                    <button id="ai-submit-answer-btn" class="ai-button">提交回答</button>
+                </div>
+            </div>
+            
+            <div class="card-section">
+                <h4>考试内容</h4>
+                <div id="card-content"></div>
             </div>
             
             <div id="card-image-container">
                  <!-- 图片将由JS动态生成 -->
-            </div>
-
-            <div class="card-section">
-                <h4>考试内容</h4>
-                <div id="card-content"></div>
             </div>
 
             <div class="card-section veto">
