@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const cardImageContainer = document.getElementById('card-image-container');
     const practiceToggle = document.getElementById('practice-mode-toggle');
     const practiceContainer = document.getElementById('practice-container');
+    const aiTutorBtn = document.getElementById('ai-tutor-btn');
+    const aiInteractionContainer = document.getElementById('ai-interaction-container');
+    const aiQuestionBox = document.getElementById('ai-question-box');
+    const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
     const cardContentSections = [
         document.getElementById('card-content').parentElement,
         document.getElementById('card-veto').parentElement,
@@ -115,7 +119,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- 其他辅助函数 ---
-    function updateUIMode(isPracticeMode) { cardContentSections.forEach(s => s.style.display = isPracticeMode ? 'none' : 'block'); practiceContainer.classList.toggle('hidden', !isPracticeMode); }
+    function updateUIMode(isPracticeMode) { 
+        cardContentSections.forEach(s => s.style.display = isPracticeMode ? 'none' : 'block'); 
+        practiceContainer.classList.toggle('hidden', !isPracticeMode);
+        // 在练习模式关闭时隐藏AI交互容器
+        if (!isPracticeMode) {
+            aiInteractionContainer.classList.add('hidden');
+        }
+    }
     function populateNav() { cardIds.forEach(id => { const li = document.createElement('li'); li.innerHTML = `<a href="#" data-id="${id}">${id}</a>`; navList.appendChild(li); }); }
     function updateActiveNav(activeId) { navList.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.id === activeId)); }
     function generatePractice(card) { practiceContainer.innerHTML = ''; if (!card.practice || card.practice.length === 0) { practiceContainer.innerHTML = '<p style="color: #777; font-style: italic;">此题卡暂无随堂练习。</p>'; return; } card.practice.forEach((item, index) => { const div = document.createElement('div'); div.className = 'practice-item'; div.innerHTML = `<p class="practice-question">练习 ${index + 1}: ${item.question}</p><button class="toggle-answer-btn" data-target="answer-${card.id}-${index}">显示/隐藏答案</button><div id="answer-${card.id}-${index}" class="practice-answer-container"><div class="practice-answer-official"><h5>【官方指南】</h5><p>${item.officialAnswer.replace(/\n/g, '<br>')}</p></div><div class="practice-answer-simple"><h5>【记忆要点】</h5><p>${item.simpleAnswer.replace(/\n/g, '<br>')}</p></div></div>`; practiceContainer.appendChild(div); }); }
@@ -140,6 +151,54 @@ document.addEventListener('DOMContentLoaded', function() {
     practiceContainer.addEventListener('click', function(event) { if (event.target.classList.contains('toggle-answer-btn')) { const targetId = event.target.dataset.target; const answerContainer = document.getElementById(targetId); if (answerContainer) { answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; } } });
     mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
+    aiTutorBtn.addEventListener('click', handleAITutorClick);
+
+    // --- AI导师功能 ---
+    async function handleAITutorClick() {
+        const card = examData[currentCardId];
+        if (!card) return;
+
+        // 构造发送给AI的提示
+        const prompt = `这是考试要点：\n${card.content.join('\n')}\n请根据这些要点，向我提出一个相关的问题。`;
+
+        // 显示加载动画，并禁用按钮
+        aiTutorBtn.disabled = true;
+        aiTutorBtn.innerHTML = '<span class="ai-icon">🤔</span> 正在思考...';
+        aiInteractionContainer.classList.remove('hidden');
+        aiQuestionBox.innerHTML = '';
+        aiLoadingSpinner.classList.remove('hidden');
+
+        try {
+            // 调用我们的Netlify Function
+            const response = await fetch('/.netlify/functions/ask-ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`服务器错误: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // 显示AI的提问
+            aiQuestionBox.textContent = data.response;
+
+        } catch (error) {
+            aiQuestionBox.textContent = `出错了：${error.message}，请稍后再试。`;
+            console.error('AI Tutor Error:', error);
+        } finally {
+            // 隐藏加载动画，并恢复按钮
+            aiLoadingSpinner.classList.add('hidden');
+            aiTutorBtn.disabled = false;
+            aiTutorBtn.innerHTML = '<span class="ai-icon">🤖</span> 再问一题';
+        }
+    }
 
     // --- 页面初始化 ---
     populateNav();

@@ -44,10 +44,19 @@
                         <span class="slider"></span>
                     </label>
                     <span>练习模式</span>
+                    <!-- 新增的AI考官按钮 -->
+                    <button id="ai-tutor-btn" class="ai-button" title="让AI根据当前题卡内容提问">
+                         <span class="ai-icon">🤖</span> AI考官
+                    </button>
                 </div>
                 <div id="practice-container" class="hidden">
                     <!-- 练习题将由JS动态生成到这里 -->
                 </div>
+            </div>
+
+            <div id="ai-interaction-container" class="hidden">
+                <div id="ai-question-box" class="ai-box"></div>
+                <div id="ai-loading-spinner" class="spinner hidden"></div>
             </div>
             
             <div id="card-image-container">
