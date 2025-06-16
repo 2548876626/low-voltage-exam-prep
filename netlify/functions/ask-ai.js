@@ -1,4 +1,5 @@
 // netlify/functions/ask-ai.js
+const fetch = require('node-fetch'); 
 
 exports.handler = async function(event, context) {
     // 只接受 POST 请求
@@ -20,7 +21,7 @@ exports.handler = async function(event, context) {
                 "Authorization": `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "deepseek-chat", // 使用官方推荐的稳定模型名
+                model: "deepseek/deepseek-r1-0528:free", // 使用官方推荐的稳定模型名
                 messages: [
                     { "role": "system", "content": "你是一个严格的低压电工实操考官。请根据用户提供的考试要点，一次只提出一个相关的问题。问题要简明扼셔，直接切入要点。" },
                     { "role": "user", "content": prompt }
