@@ -431,6 +431,16 @@ input:checked + .slider:before {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* 新增淡入淡出动画 */
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* --- 用于JS切换的动画类 (使用固定时间) --- */
 .slide-out-left {
     animation: slide-out-to-left 0.2s forwards ease-in-out;
@@ -443,6 +453,14 @@ input:checked + .slider:before {
 }
 .slide-in-left {
     animation: slide-in-from-left 0.2s forwards ease-in-out;
+}
+
+/* 新增淡入淡出动画类 */
+.fade-out {
+    animation: fade-out 0.2s forwards ease-in-out;
+}
+.fade-in {
+    animation: fade-in 0.2s forwards ease-in-out;
 }
 
 /* ======================================== */

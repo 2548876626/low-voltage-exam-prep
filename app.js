@@ -86,16 +86,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 处理动画和卡片切换
-    function animateAndChangeCard(newCardId, direction) {
+    function animateAndChangeCard(newCardId, animationOptions = {}) {
         if (isAnimating) return;
         isAnimating = true;
+
+        const { animationType = 'fade', direction = 'next' } = animationOptions;
 
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
         }
         
-        const outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
-        const inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
+        let outClass, inClass;
+
+        if (animationType === 'slide') {
+            outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
+            inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
+        } else { // Default to fade
+            outClass = 'fade-out';
+            inClass = 'fade-in';
+        }
         
         mainContent.classList.add(outClass);
 
@@ -129,9 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const currentIndex = cardIds.indexOf(currentCardId);
         if (deltaX < 0 && currentIndex < cardIds.length - 1) {
-            animateAndChangeCard(cardIds[currentIndex + 1], 'next');
+            animateAndChangeCard(cardIds[currentIndex + 1], { animationType: 'slide', direction: 'next' });
         } else if (deltaX > 0 && currentIndex > 0) {
-            animateAndChangeCard(cardIds[currentIndex - 1], 'prev');
+            animateAndChangeCard(cardIds[currentIndex - 1], { animationType: 'slide', direction: 'prev' });
         }
     }
 
@@ -161,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (newCardId === currentCardId || isAnimating) return;
             const currentIndex = cardIds.indexOf(currentCardId);
             const newIndex = cardIds.indexOf(newCardId);
-            animateAndChangeCard(newCardId, newIndex > currentIndex ? 'next' : 'prev');
+            animateAndChangeCard(newCardId, { animationType: 'fade', direction: newIndex > currentIndex ? 'next' : 'prev' });
         }
     });
 
