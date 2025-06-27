@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('card-image-container'),
         document.querySelector('.card-meta')
     ];
+    // 导航按钮
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
 
     // --- 滑动功能所需变量 ---
     let touchStartX = 0;
@@ -83,6 +86,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 在切换题卡时重置AI交互区域
         resetAIState();
+        
+        // 更新导航按钮状态
+        updateNavButtons();
     }
     
     // 处理动画和卡片切换
@@ -144,6 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 更新导航按钮状态
+    function updateNavButtons() {
+        const currentIndex = cardIds.indexOf(currentCardId);
+        
+        // 如果是第一个题卡，禁用上一页按钮
+        prevBtn.disabled = currentIndex === 0;
+        
+        // 如果是最后一个题卡，禁用下一页按钮
+        nextBtn.disabled = currentIndex === cardIds.length - 1;
+    }
+
     // --- 其他辅助函数 ---
     function updateUIMode(isPracticeMode) { 
         cardContentSections.forEach(s => s.style.display = isPracticeMode ? 'none' : 'block'); 
@@ -171,6 +188,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentIndex = cardIds.indexOf(currentCardId);
             const newIndex = cardIds.indexOf(newCardId);
             animateAndChangeCard(newCardId, { animationType: 'fade', direction: newIndex > currentIndex ? 'next' : 'prev' });
+        }
+    });
+
+    // 导航按钮事件监听器
+    prevBtn.addEventListener('click', function() {
+        if (isAnimating || prevBtn.disabled) return;
+        const currentIndex = cardIds.indexOf(currentCardId);
+        if (currentIndex > 0) {
+            animateAndChangeCard(cardIds[currentIndex - 1], { animationType: 'fade', direction: 'prev' });
+        }
+    });
+
+    nextBtn.addEventListener('click', function() {
+        if (isAnimating || nextBtn.disabled) return;
+        const currentIndex = cardIds.indexOf(currentCardId);
+        if (currentIndex < cardIds.length - 1) {
+            animateAndChangeCard(cardIds[currentIndex + 1], { animationType: 'fade', direction: 'next' });
         }
     });
 
@@ -228,8 +262,32 @@ document.addEventListener('DOMContentLoaded', function() {
         resetAIState();
         aiInteractionContainer.classList.remove('hidden');
 
-        const systemMessage = { role: 'system', content: '你是一个严格的低压电工实操考官。请根据用户提供的考试要点，一次只提出一个相关的问题。问题要简明扼要，直接切入要点。在用户回答后，请判断其回答是否正确，并可以追问或提出新问题。' };
-        const userMessage = { role: 'user', content: `这是考试要点：\n${card.content.join('\n')}\n请开始提问。` };
+        const systemMessage = { 
+            role: 'system', 
+            content: `你是一位资深的低压电工实操考试考官，经验丰富，对国家低压电工考证标准非常熟悉。
+            
+1. 你的提问应严格围绕当前题卡内容进行，包括考试要点、否决项和题卡图例(如果有)。
+2. 模拟真实考场环境，问题应专业、具体、直接，类似真实考官的提问风格。
+3. 每次只提出一个问题，问题应具有针对性，能测试考生对知识点的掌握程度。
+4. 在考生回答后，给予专业评价，并指出正确之处和错误之处。
+5. 如果考生回答错误或不完整，可以给予适当提示，并要求其重新回答或进行补充。
+6. 如果答案正确，可肯定后提出新的相关问题或进行知识点的扩展。
+7. 提问风格应该体现出低压电工实操考试的严谨性和专业性。`
+        };
+        
+        const userMessage = { 
+            role: 'user', 
+            content: `当前题卡信息：
+            
+题卡ID: ${currentCardId}
+题卡标题: ${card.title}
+考试要点: 
+${card.content.join('\n')}
+否决项:
+${card.vetoItems.join('\n')}
+
+请基于上述内容，开始模拟低压电工考证的口试环节，提出专业且有针对性的问题。` 
+        };
         
         conversationHistory = [systemMessage, userMessage];
         
@@ -263,4 +321,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- 页面初始化 ---
     populateNav();
     displayCardWithoutAnimation(currentCardId);
+    updateNavButtons(); // 确保初始化时导航按钮状态正确
 });

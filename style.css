@@ -86,6 +86,7 @@ body {
     border-bottom: 2px solid #e0e0e0;
     margin-bottom: 20px;
     padding-bottom: 15px;
+    position: relative; /* 添加相对定位以便导航按钮定位 */
 }
 
 #card-subject {
@@ -97,6 +98,39 @@ body {
 #card-title {
     color: #2c3e50;
     font-size: 2em;
+}
+
+/* 导航按钮样式 */
+.nav-buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.nav-btn:hover {
+    background-color: #2980b9;
+}
+
+.nav-btn:active {
+    transform: scale(0.96);
+}
+
+.nav-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
 }
 
 .card-meta {
