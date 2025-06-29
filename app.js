@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cardIds = Object.keys(examData);
     let isAnimating = false; // 动画锁，防止连续触发
     let conversationHistory = [];
+    let alwaysShowAnswers = false; // 是否始终显示答案
 
     // --- DOM元素获取 ---
     const navList = document.getElementById('card-nav-list');
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const aiAnswerArea = document.getElementById('ai-answer-area');
     const aiUserAnswerInput = document.getElementById('ai-user-answer');
     const aiSubmitAnswerBtn = document.getElementById('ai-submit-answer-btn');
+    const alwaysShowAnswersBtn = document.getElementById('always-show-answers-btn'); // 新增按钮元素
     const cardContentSections = [
         document.getElementById('card-content').parentElement,
         document.getElementById('card-veto').parentElement,
@@ -170,10 +172,57 @@ document.addEventListener('DOMContentLoaded', function() {
             aiInteractionContainer.classList.add('hidden');
             resetAIState();
         }
+        
+        // 更新"始终显示答案"按钮状态
+        if (alwaysShowAnswers) {
+            alwaysShowAnswersBtn.classList.add('active');
+            alwaysShowAnswersBtn.innerHTML = '<span class="answer-icon">📝</span> 隐藏答案';
+            // 显示所有答案
+            document.querySelectorAll('.practice-answer-container').forEach(container => {
+                container.style.display = 'block';
+            });
+        } else {
+            alwaysShowAnswersBtn.classList.remove('active');
+            alwaysShowAnswersBtn.innerHTML = '<span class="answer-icon">📝</span> 显示答案';
+            // 隐藏所有答案
+            document.querySelectorAll('.practice-answer-container').forEach(container => {
+                container.style.display = 'none';
+            });
+        }
     }
     function populateNav() { cardIds.forEach(id => { const li = document.createElement('li'); li.innerHTML = `<a href="#" data-id="${id}">${id}</a>`; navList.appendChild(li); }); }
     function updateActiveNav(activeId) { navList.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.id === activeId)); }
-    function generatePractice(card) { practiceContainer.innerHTML = ''; if (!card.practice || card.practice.length === 0) { practiceContainer.innerHTML = '<p style="color: #777; font-style: italic;">此题卡暂无随堂练习。</p>'; return; } card.practice.forEach((item, index) => { const div = document.createElement('div'); div.className = 'practice-item'; div.innerHTML = `<p class="practice-question">练习 ${index + 1}: ${item.question}</p><button class="toggle-answer-btn" data-target="answer-${card.id}-${index}">显示/隐藏答案</button><div id="answer-${card.id}-${index}" class="practice-answer-container"><div class="practice-answer-official"><h5>【官方指南】</h5><p>${item.officialAnswer.replace(/\n/g, '<br>')}</p></div><div class="practice-answer-simple"><h5>【记忆要点】</h5><p>${item.simpleAnswer.replace(/\n/g, '<br>')}</p></div></div>`; practiceContainer.appendChild(div); }); }
+    function generatePractice(card) { 
+        practiceContainer.innerHTML = ''; 
+        if (!card.practice || card.practice.length === 0) { 
+            practiceContainer.innerHTML = '<p style="color: #777; font-style: italic;">此题卡暂无随堂练习。</p>'; 
+            return; 
+        } 
+        card.practice.forEach((item, index) => { 
+            const div = document.createElement('div'); 
+            div.className = 'practice-item'; 
+            
+            // 处理答案文本，去除过多的换行，使显示更紧凑
+            const officialAnswer = item.officialAnswer ? item.officialAnswer.replace(/\n+/g, '<br>') : '';
+            const simpleAnswer = item.simpleAnswer ? item.simpleAnswer.replace(/\n+/g, '<br>') : '';
+            
+            div.innerHTML = `
+                <p class="practice-question">练习 ${index + 1}: ${item.question}</p>
+                <button class="toggle-answer-btn" data-target="answer-${card.id}-${index}">显示/隐藏答案</button>
+                <div id="answer-${card.id}-${index}" class="practice-answer-container" style="${alwaysShowAnswers ? 'display:block;' : ''}">
+                    <div class="practice-answer-official">
+                        <h5>【官方指南】</h5>
+                        <p>${officialAnswer}</p>
+                    </div>
+                    <div class="practice-answer-simple">
+                        <h5>【记忆要点】</h5>
+                        <p>${simpleAnswer}</p>
+                    </div>
+                </div>
+            `; 
+            practiceContainer.appendChild(div); 
+        }); 
+    }
 
     // --- 事件监听器 ---
     menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
@@ -209,11 +258,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     practiceToggle.addEventListener('change', function() { updateUIMode(this.checked); });
-    practiceContainer.addEventListener('click', function(event) { if (event.target.classList.contains('toggle-answer-btn')) { const targetId = event.target.dataset.target; const answerContainer = document.getElementById(targetId); if (answerContainer) { answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; } } });
+    practiceContainer.addEventListener('click', function(event) { 
+        if (event.target.classList.contains('toggle-answer-btn') && !alwaysShowAnswers) { 
+            const targetId = event.target.dataset.target; 
+            const answerContainer = document.getElementById(targetId); 
+            if (answerContainer) { 
+                answerContainer.style.display = answerContainer.style.display === 'block' ? 'none' : 'block'; 
+            } 
+        } 
+    });
     mainContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     mainContent.addEventListener('touchend', (e) => { touchEndX = e.changedTouches[0].clientX; handleSwipe(); });
     aiTutorBtn.addEventListener('click', startAIConversation);
     aiSubmitAnswerBtn.addEventListener('click', submitUserAnswer);
+    alwaysShowAnswersBtn.addEventListener('click', function() {
+        alwaysShowAnswers = !alwaysShowAnswers;
+        
+        // 更新按钮外观
+        if (alwaysShowAnswers) {
+            this.classList.add('active');
+            this.innerHTML = '<span class="answer-icon">📝</span> 隐藏答案';
+            // 显示所有答案
+            document.querySelectorAll('.practice-answer-container').forEach(container => {
+                container.style.display = 'block';
+            });
+        } else {
+            this.classList.remove('active');
+            this.innerHTML = '<span class="answer-icon">📝</span> 显示答案';
+            // 隐藏所有答案
+            document.querySelectorAll('.practice-answer-container').forEach(container => {
+                container.style.display = 'none';
+            });
+        }
+    });
 
     // --- AI导师功能 ---
     function resetAIState() {

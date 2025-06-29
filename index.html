@@ -33,11 +33,6 @@
             <div class="card-header">
                 <h2 id="card-subject">科目</h2>
                 <h3 id="card-title">标题</h3>
-                <!-- 新增导航按钮 -->
-                <div class="nav-buttons">
-                    <button id="prev-btn" class="nav-btn">上一页</button>
-                    <button id="next-btn" class="nav-btn">下一页</button>
-                </div>
             </div>
             
             <!-- 练习模块移到这里（题目横线下面） -->
@@ -49,6 +44,10 @@
                         <span class="slider"></span>
                     </label>
                     <span>练习模式</span>
+                    <!-- 新增的始终显示答案按钮 -->
+                    <button id="always-show-answers-btn" class="answer-button">
+                        <span class="answer-icon">📝</span> 显示答案
+                    </button>
                     <!-- 新增的AI考官按钮 -->
                     <button id="ai-tutor-btn" class="ai-button" title="让AI根据当前题卡内容提问">
                          <span class="ai-icon">🤖</span> AI考官
@@ -90,6 +89,12 @@
                 <span>考题配分: <strong id="card-score"></strong></span>
             </div>
         </main>
+    </div>
+
+    <!-- 固定在屏幕底部的导航按钮 -->
+    <div class="fixed-nav-buttons">
+        <button id="prev-btn" class="nav-btn">上一页</button>
+        <button id="next-btn" class="nav-btn">下一页</button>
     </div>
 
     <!-- 引入数据和逻辑脚本 -->

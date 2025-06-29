@@ -80,6 +80,7 @@ body {
     overflow-y: auto;
     position: relative;
     z-index: 5;
+    padding-bottom: 80px;
 }
 
 .card-header {
@@ -100,38 +101,7 @@ body {
     font-size: 2em;
 }
 
-/* 导航按钮样式 */
-.nav-buttons {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: flex;
-    gap: 10px;
-}
-
-.nav-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.nav-btn:hover {
-    background-color: #2980b9;
-}
-
-.nav-btn:active {
-    transform: scale(0.96);
-}
-
-.nav-btn:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-}
+/* 导航按钮样式已移至底部固定导航 */
 
 .card-meta {
     background-color: #ecf0f1;
@@ -208,6 +178,37 @@ body {
     margin-right: 8px;
 }
 
+/* 始终显示答案按钮样式 */
+.answer-button {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.answer-button:hover {
+    background-color: #219653;
+}
+
+.answer-button:active {
+    transform: scale(0.96);
+}
+
+.answer-button.active {
+    background-color: #e74c3c;
+}
+
+.answer-icon {
+    font-size: 1.1em;
+}
+
 #practice-container {
     display: flex;
     flex-direction: column;
@@ -222,7 +223,7 @@ body {
     background-color: #fff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     transition: box-shadow 0.3s;
 }
@@ -233,14 +234,14 @@ body {
 
 .practice-question {
     font-weight: bold;
-    font-size: 1.1em;
-    margin-bottom: 15px;
+    font-size: 1.05em;
+    margin-bottom: 10px;
 }
 
 .practice-answer-container {
     display: none; /* 默认隐藏答案 */
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px dashed #ccc;
 }
 
@@ -248,34 +249,63 @@ body {
     background-color: #f8f9fa;
     padding: 10px;
     border-radius: 5px;
-    white-space: pre-wrap;
     margin-bottom: 10px;
+    font-size: 0.95em;
 }
 
 .practice-answer-simple {
-    background-color: #e8f6f3;
+    background-color: #e8f4f8;
     padding: 10px;
     border-radius: 5px;
-    white-space: pre-wrap;
-    border-left: 3px solid #1abc9c;
+    font-size: 0.95em;
+}
+
+/* 调整答案区域的标题和内容样式，使其更紧凑 */
+.practice-answer-official h5,
+.practice-answer-simple h5 {
+    margin: 0 0 5px 0;
+    font-size: 0.9em;
+    color: #444;
+}
+
+.practice-answer-official p,
+.practice-answer-simple p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 记忆要点和官方指南的横向布局 */
+@media (min-width: 768px) {
+    .practice-answer-container {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .practice-answer-official,
+    .practice-answer-simple {
+        flex: 1;
+        margin-bottom: 0;
+    }
 }
 
 .toggle-answer-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.85em;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    transition: background-color 0.2s;
+    margin-bottom: 5px;
 }
 
 .toggle-answer-btn:hover {
-    background-color: #2980b9;
+    background-color: #e0e0e0;
 }
 
 .toggle-answer-btn:active {
-    transform: scale(0.97);
+    transform: translateY(1px);
 }
 
 /* --- 开关(Switch)样式 --- */
@@ -676,4 +706,66 @@ hr {
   border: 0;
   height: 1px;
   background-color: #ddd;
+}
+
+/* 固定在屏幕底部的导航按钮 */
+.fixed-nav-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+    padding: 10px;
+    /* 移除背景渐变，保持透明 */
+}
+
+.nav-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    min-width: 100px;
+    text-align: center;
+    /* 增加按钮的不透明度和对比度 */
+    opacity: 0.95;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:hover {
+    background-color: #2980b9;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    opacity: 1;
+}
+
+.nav-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 为移动设备优化按钮样式 */
+@media (max-width: 768px) {
+    .fixed-nav-buttons {
+        bottom: 15px;
+        gap: 15px;
+    }
+    
+    .nav-btn {
+        padding: 8px 15px;
+        min-width: 80px;
+        font-size: 0.9em;
+    }
 }
